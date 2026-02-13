@@ -6,15 +6,9 @@
 <title>AI Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:#0a0a0f; --surface:#13131a; --surface2:#1c1c26; --border:#2a2a3a;
-    --accent:#7c6aff; --accent2:#ff6a9a; --accent3:#6affd4;
-    --text:#e8e8f0; --text-dim:#8888a0;
-  }
+  :root{--bg:#0a0a0f;--surface:#13131a;--surface2:#1c1c26;--border:#2a2a3a;--accent:#7c6aff;--accent2:#ff6a9a;--accent3:#6affd4;--text:#e8e8f0;--text-dim:#8888a0;}
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;overflow:hidden;}
-
-  /* SIDEBAR */
   #sidebar{width:270px;min-width:270px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 0;overflow:hidden;}
   .logo{padding:0 20px 16px;border-bottom:1px solid var(--border);margin-bottom:14px;}
   .logo h1{font-size:21px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
@@ -34,8 +28,6 @@
   .bab:hover{border-color:var(--accent);color:var(--accent);}
   .add-btn{margin:8px 10px;padding:9px;border:1px dashed var(--border);border-radius:10px;background:transparent;color:var(--text-dim);cursor:pointer;font-family:'Syne',sans-serif;font-size:12px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;}
   .add-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent)11;}
-
-  /* API Keys */
   .api-sec{padding:12px 10px 0;border-top:1px solid var(--border);overflow-y:auto;max-height:260px;}
   .arow{margin-bottom:7px;}
   .alabel{font-size:10px;color:var(--text-dim);font-family:'Space Mono',monospace;margin-bottom:3px;display:block;}
@@ -43,8 +35,6 @@
   .ainput:focus{border-color:var(--accent);}
   .save-btn{width:100%;padding:8px;background:var(--accent);border:none;border-radius:8px;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;transition:opacity .2s;margin-top:6px;margin-bottom:8px;}
   .save-btn:hover{opacity:.85;}
-
-  /* MAIN */
   #main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
   .chat-hdr{padding:14px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--surface);}
   .hdr-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;}
@@ -57,8 +47,6 @@
   .msel-wrap::after{content:'▾';position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--text-dim);pointer-events:none;font-size:11px;}
   .hdr-btn{padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-family:'Syne',sans-serif;font-size:12px;cursor:pointer;transition:all .2s;}
   .hdr-btn:hover{border-color:var(--accent2);color:var(--accent2);}
-
-  /* Messages */
   #messages{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth;}
   #messages::-webkit-scrollbar{width:4px;}
   #messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
@@ -85,8 +73,6 @@
   .welcome-icon{font-size:46px;margin-bottom:6px;}
   .welcome h2{font-size:22px;font-weight:800;}
   .welcome p{color:var(--text-dim);font-size:13px;max-width:380px;line-height:1.6;}
-
-  /* Input */
   .input-area{padding:14px 22px 18px;border-top:1px solid var(--border);background:var(--surface);}
   .input-wrap{display:flex;gap:10px;background:var(--bg);border:1px solid var(--border);border-radius:13px;padding:9px 13px;transition:border-color .2s;}
   .input-wrap:focus-within{border-color:var(--accent)88;}
@@ -97,8 +83,6 @@
   #sb:disabled{opacity:.4;cursor:not-allowed;transform:none;}
   #sb svg{width:15px;height:15px;fill:white;}
   .input-hint{font-size:10px;color:var(--text-dim);text-align:center;margin-top:6px;font-family:'Space Mono',monospace;}
-
-  /* MODAL */
   .overlay{position:fixed;inset:0;background:#00000088;backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s;}
   .overlay.show{opacity:1;pointer-events:all;}
   .modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px;width:460px;max-width:92vw;max-height:90vh;overflow-y:auto;transform:scale(.95);transition:transform .2s;}
@@ -122,8 +106,6 @@
   .bcncl:hover{border-color:var(--text-dim);color:var(--text);}
   .bsub{padding:9px 22px;border-radius:9px;border:none;background:var(--accent);color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:opacity .2s;}
   .bsub:hover{opacity:.85;}
-
-  /* Toast */
   .toast{position:fixed;bottom:22px;right:22px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 18px;font-size:13px;font-weight:600;z-index:200;transform:translateY(16px);opacity:0;transition:all .3s;}
   .toast.show{transform:translateY(0);opacity:1;}
   .toast.ok{border-color:var(--accent3)88;color:var(--accent3);}
@@ -135,12 +117,8 @@
 </style>
 </head>
 <body>
-
 <div id="sidebar">
-  <div class="logo">
-    <h1>⚡ AI Hub</h1>
-    <p>your personal ai workspace</p>
-  </div>
+  <div class="logo"><h1>⚡ AI Hub</h1><p>your personal ai workspace</p></div>
   <div class="slabel">Bots của bạn</div>
   <div class="bot-list" id="botList"></div>
   <button class="add-btn" onclick="openModal()">＋ Tạo bot mới</button>
@@ -153,7 +131,6 @@
     <button class="save-btn" onclick="saveKeys()">💾 Lưu API Keys</button>
   </div>
 </div>
-
 <div id="main">
   <div class="chat-hdr">
     <div class="hdr-icon" id="hIcon" style="background:#1c1c26">🤖</div>
@@ -166,7 +143,7 @@
     </div>
   </div>
   <div id="messages">
-    <div class="welcome" id="ws">
+    <div class="welcome">
       <div class="welcome-icon">⚡</div>
       <h2>AI Hub của bạn</h2>
       <p>Chọn bot từ sidebar hoặc tạo bot mới với system prompt và model riêng.</p>
@@ -180,7 +157,6 @@
     <div class="input-hint">Enter để gửi · Shift+Enter xuống dòng</div>
   </div>
 </div>
-
 <div class="overlay" id="ov">
   <div class="modal">
     <h3 id="mTitle">✨ Tạo Bot Mới</h3>
@@ -219,10 +195,11 @@
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script>
+// ── PROXY URL ──
+const PROXY = 'https://hub.danhrfo.workers.dev';
+
 const MODELS={
   'claude-sonnet':{l:'Claude 3.5 Sonnet',p:'claude'},
   'claude-haiku':{l:'Claude 3 Haiku',p:'claude'},
@@ -262,11 +239,11 @@ function saveHist(){localStorage.setItem('ahh',JSON.stringify(hist));}
 
 function init(){
   renderList();
-  if(keys.claude) document.getElementById('kc').value=keys.claude;
-  if(keys.openai) document.getElementById('ko').value=keys.openai;
-  if(keys.gemini) document.getElementById('kg').value=keys.gemini;
-  if(keys.perplexity) document.getElementById('kp').value=keys.perplexity;
-  buildEG(); buildCG();
+  if(keys.claude)document.getElementById('kc').value=keys.claude;
+  if(keys.openai)document.getElementById('ko').value=keys.openai;
+  if(keys.gemini)document.getElementById('kg').value=keys.gemini;
+  if(keys.perplexity)document.getElementById('kp').value=keys.perplexity;
+  buildEG();buildCG();
 }
 
 function saveKeys(){
@@ -290,12 +267,8 @@ function renderList(){
 }
 
 function selBot(id){
-  cur=bots.find(b=>b.id===id);
-  if(!cur)return;
-  am=cur.model;
-  updateHdr();
-  renderList();
-  renderMsgs();
+  cur=bots.find(b=>b.id===id);if(!cur)return;
+  am=cur.model;updateHdr();renderList();renderMsgs();
 }
 
 function updateHdr(){
@@ -310,11 +283,7 @@ function updateHdr(){
   sel.innerHTML=Object.entries(MODELS).map(([k,v])=>`<option value="${k}" ${k===am?'selected':''}>${v.l}</option>`).join('');
 }
 
-function changeModel(v){
-  am=v;
-  document.getElementById('hModel').textContent=(MODELS[v]||{}).l||v;
-  toast('🔄 '+(MODELS[v]||{}).l,'ok');
-}
+function changeModel(v){am=v;document.getElementById('hModel').textContent=(MODELS[v]||{}).l||v;toast('🔄 '+(MODELS[v]||{}).l,'ok');}
 
 function renderMsgs(){
   const c=document.getElementById('messages');
@@ -352,19 +321,16 @@ function clearChat(){
 async function send(){
   if(loading||!cur)return;
   const inp=document.getElementById('ui');
-  const txt=inp.value.trim();
-  if(!txt)return;
+  const txt=inp.value.trim();if(!txt)return;
   inp.value='';inp.style.height='auto';
   if(!hist[cur.id])hist[cur.id]=[];
   hist[cur.id].push({r:'user',c:txt});
   saveHist();renderMsgs();
-
   const container=document.getElementById('messages');
   const te=document.createElement('div');
   te.className='msg bot';te.id='ty';
   te.innerHTML=`<div class="mavatar" style="background:${cur.color}22">${cur.emoji}</div><div class="typing"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>`;
   container.appendChild(te);container.scrollTop=container.scrollHeight;
-
   loading=true;document.getElementById('sb').disabled=true;
   try{
     const rep=await callAPI(am,cur.prompt,hist[cur.id]);
@@ -381,6 +347,18 @@ async function send(){
   document.getElementById('ui').focus();
 }
 
+// ── API với PROXY ──
+async function proxyFetch(targetUrl, headers, body){
+  const url = `${PROXY}?target=${encodeURIComponent(targetUrl)}`;
+  const r = await fetch(url, {method:'POST', headers, body});
+  if(!r.ok){
+    const e = await r.json().catch(()=>({}));
+    const msg = e.error?.message || e.message || `HTTP ${r.status}`;
+    throw new Error(msg);
+  }
+  return r.json();
+}
+
 async function callAPI(mk,sys,h){
   const m=MODELS[mk];if(!m)throw new Error('Model không hợp lệ');
   const msgs=h.slice(0,-1).map(x=>({role:x.r==='bot'?'assistant':'user',content:x.c}));
@@ -395,63 +373,52 @@ async function callAPI(mk,sys,h){
 async function callClaude(mk,sys,msgs,last){
   if(!keys.claude)throw new Error('Chưa nhập Claude API key!');
   const mmap={'claude-sonnet':'claude-3-5-sonnet-20241022','claude-haiku':'claude-3-haiku-20240307','claude-opus':'claude-3-opus-20240229'};
-  const r=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':keys.claude,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-calls':'true'},
-    body:JSON.stringify({model:mmap[mk]||mk,max_tokens:2048,system:sys,messages:[...msgs,{role:'user',content:last}]})
-  });
-  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'Claude lỗi '+r.status);}
-  return (await r.json()).content[0].text;
+  const data = await proxyFetch(
+    'https://api.anthropic.com/v1/messages',
+    {'Content-Type':'application/json','x-api-key':keys.claude,'anthropic-version':'2023-06-01'},
+    JSON.stringify({model:mmap[mk]||mk,max_tokens:2048,system:sys,messages:[...msgs,{role:'user',content:last}]})
+  );
+  return data.content[0].text;
 }
 
 async function callOAI(mk,sys,msgs,last){
   if(!keys.openai)throw new Error('Chưa nhập OpenAI API key!');
-  const r=await fetch('https://api.openai.com/v1/chat/completions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+keys.openai},
-    body:JSON.stringify({model:mk,messages:[{role:'system',content:sys},...msgs,{role:'user',content:last}]})
-  });
-  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'OpenAI lỗi '+r.status);}
-  return (await r.json()).choices[0].message.content;
+  const data = await proxyFetch(
+    'https://api.openai.com/v1/chat/completions',
+    {'Content-Type':'application/json','Authorization':'Bearer '+keys.openai},
+    JSON.stringify({model:mk,messages:[{role:'system',content:sys},...msgs,{role:'user',content:last}]})
+  );
+  return data.choices[0].message.content;
 }
 
 async function callGemini(mk,sys,msgs,last){
   if(!keys.gemini)throw new Error('Chưa nhập Gemini API key!');
   const gmap={'gemini-2.0-flash':'gemini-2.0-flash','gemini-1.5-pro':'gemini-1.5-pro','gemini-1.5-flash':'gemini-1.5-flash'};
   const mn=gmap[mk]||'gemini-1.5-flash';
-  const url=`https://generativelanguage.googleapis.com/v1beta/models/${mn}:generateContent?key=${keys.gemini}`;
   const contents=[];
   msgs.forEach(m=>contents.push({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]}));
   contents.push({role:'user',parts:[{text:last}]});
-  const r=await fetch(url,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents,generationConfig:{maxOutputTokens:2048,temperature:0.7}})
-  });
-  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'Gemini lỗi '+r.status);}
-  const d=await r.json();
-  return d.candidates?.[0]?.content?.parts?.[0]?.text||'Không có phản hồi';
+  const data = await proxyFetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${mn}:generateContent?key=${keys.gemini}`,
+    {'Content-Type':'application/json'},
+    JSON.stringify({system_instruction:{parts:[{text:sys}]},contents,generationConfig:{maxOutputTokens:2048,temperature:0.7}})
+  );
+  return data.candidates?.[0]?.content?.parts?.[0]?.text||'Không có phản hồi';
 }
 
 async function callPPX(mk,sys,msgs,last){
   if(!keys.perplexity)throw new Error('Chưa nhập Perplexity API key!');
   const pmap={'sonar-large':'llama-3.1-sonar-large-128k-online','sonar-small':'llama-3.1-sonar-small-128k-online'};
-  const r=await fetch('https://api.perplexity.ai/chat/completions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+keys.perplexity},
-    body:JSON.stringify({model:pmap[mk]||mk,messages:[{role:'system',content:sys},...msgs,{role:'user',content:last}]})
-  });
-  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'Perplexity lỗi '+r.status);}
-  return (await r.json()).choices[0].message.content;
+  const data = await proxyFetch(
+    'https://api.perplexity.ai/chat/completions',
+    {'Content-Type':'application/json','Authorization':'Bearer '+keys.perplexity},
+    JSON.stringify({model:pmap[mk]||mk,messages:[{role:'system',content:sys},...msgs,{role:'user',content:last}]})
+  );
+  return data.choices[0].message.content;
 }
 
-/* MODAL */
-function buildEG(){
-  document.getElementById('eg').innerHTML=EMOJIS.map(e=>`<button class="ebtn ${e===se?'sel':''}" onclick="selE('${e}')">${e}</button>`).join('');
-}
-function buildCG(){
-  document.getElementById('cg').innerHTML=COLORS.map(c=>`<div class="cbtn ${c===sc?'sel':''}" style="background:${c}" onclick="selC('${c}')"></div>`).join('');
-}
+function buildEG(){document.getElementById('eg').innerHTML=EMOJIS.map(e=>`<button class="ebtn ${e===se?'sel':''}" onclick="selE('${e}')">${e}</button>`).join('');}
+function buildCG(){document.getElementById('cg').innerHTML=COLORS.map(c=>`<div class="cbtn ${c===sc?'sel':''}" style="background:${c}" onclick="selC('${c}')"></div>`).join('');}
 function selE(e){se=e;buildEG();}
 function selC(c){sc=c;buildCG();}
 
@@ -525,7 +492,6 @@ function toast(msg,type='ok'){
   t.textContent=msg;t.className=`toast ${type} show`;
   setTimeout(()=>t.classList.remove('show'),2800);
 }
-
 document.getElementById('ov').addEventListener('click',function(e){if(e.target===this)closeModal();});
 init();
 </script>
