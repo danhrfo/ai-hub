@@ -7,734 +7,215 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0f;
-    --surface: #13131a;
-    --surface2: #1c1c26;
-    --border: #2a2a3a;
-    --accent: #7c6aff;
-    --accent2: #ff6a9a;
-    --accent3: #6affd4;
-    --text: #e8e8f0;
-    --text-dim: #8888a0;
-    --user-bubble: #1e1a3a;
-    --bot-bubble: #131320;
+    --bg:#0a0a0f; --surface:#13131a; --surface2:#1c1c26; --border:#2a2a3a;
+    --accent:#7c6aff; --accent2:#ff6a9a; --accent3:#6affd4;
+    --text:#e8e8f0; --text-dim:#8888a0;
   }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;overflow:hidden;}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* SIDEBAR */
+  #sidebar{width:270px;min-width:270px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 0;overflow:hidden;}
+  .logo{padding:0 20px 16px;border-bottom:1px solid var(--border);margin-bottom:14px;}
+  .logo h1{font-size:21px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .logo p{font-size:10px;color:var(--text-dim);font-family:'Space Mono',monospace;margin-top:2px;}
+  .slabel{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--text-dim);padding:0 20px 8px;text-transform:uppercase;}
+  .bot-list{padding:0 10px;flex:1;overflow-y:auto;}
+  .bot-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;transition:all .2s;margin-bottom:3px;border:1px solid transparent;}
+  .bot-item:hover{background:var(--surface2);}
+  .bot-item.active{background:var(--surface2);border-color:var(--border);}
+  .bot-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+  .bot-info{overflow:hidden;flex:1;}
+  .bot-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .bot-mtag{font-size:10px;color:var(--text-dim);font-family:'Space Mono',monospace;}
+  .bot-acts{display:flex;gap:3px;opacity:0;transition:opacity .2s;flex-shrink:0;}
+  .bot-item:hover .bot-acts{opacity:1;}
+  .bab{width:22px;height:22px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+  .bab:hover{border-color:var(--accent);color:var(--accent);}
+  .add-btn{margin:8px 10px;padding:9px;border:1px dashed var(--border);border-radius:10px;background:transparent;color:var(--text-dim);cursor:pointer;font-family:'Syne',sans-serif;font-size:12px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+  .add-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent)11;}
 
-  body {
-    font-family: 'Syne', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    height: 100vh;
-    display: flex;
-    overflow: hidden;
-  }
+  /* API Keys */
+  .api-sec{padding:12px 10px 0;border-top:1px solid var(--border);overflow-y:auto;max-height:260px;}
+  .arow{margin-bottom:7px;}
+  .alabel{font-size:10px;color:var(--text-dim);font-family:'Space Mono',monospace;margin-bottom:3px;display:block;}
+  .ainput{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 10px;color:var(--text);font-family:'Space Mono',monospace;font-size:10px;outline:none;transition:border-color .2s;}
+  .ainput:focus{border-color:var(--accent);}
+  .save-btn{width:100%;padding:8px;background:var(--accent);border:none;border-radius:8px;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;transition:opacity .2s;margin-top:6px;margin-bottom:8px;}
+  .save-btn:hover{opacity:.85;}
 
-  /* ─── SIDEBAR ─── */
-  #sidebar {
-    width: 260px;
-    min-width: 260px;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    padding: 20px 0;
-    transition: transform 0.3s;
-  }
-
-  .logo {
-    padding: 0 20px 20px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 16px;
-  }
-
-  .logo h1 {
-    font-size: 22px;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: -0.5px;
-  }
-
-  .logo p {
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-top: 2px;
-    font-family: 'Space Mono', monospace;
-  }
-
-  .sidebar-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: var(--text-dim);
-    padding: 0 20px 8px;
-    text-transform: uppercase;
-  }
-
-  .bot-list { padding: 0 10px; flex: 1; overflow-y: auto; }
-
-  .bot-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-bottom: 4px;
-    border: 1px solid transparent;
-  }
-
-  .bot-item:hover { background: var(--surface2); }
-
-  .bot-item.active {
-    background: var(--surface2);
-    border-color: var(--border);
-  }
-
-  .bot-item.active .bot-icon { box-shadow: 0 0 12px var(--accent)44; }
-
-  .bot-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-  }
-
-  .bot-info { overflow: hidden; }
-
-  .bot-name {
-    font-size: 13px;
-    font-weight: 700;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .bot-model {
-    font-size: 10px;
-    color: var(--text-dim);
-    font-family: 'Space Mono', monospace;
-  }
-
-  .add-bot-btn {
-    margin: 10px;
-    padding: 10px;
-    border: 1px dashed var(--border);
-    border-radius: 10px;
-    background: transparent;
-    color: var(--text-dim);
-    cursor: pointer;
-    font-family: 'Syne', sans-serif;
-    font-size: 12px;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-  }
-
-  .add-bot-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: var(--accent)11;
-  }
-
-  .api-section {
-    padding: 16px 10px 0;
-    border-top: 1px solid var(--border);
-    margin-top: 8px;
-  }
-
-  .api-input-wrap {
-    position: relative;
-    margin-bottom: 8px;
-  }
-
-  .api-label {
-    font-size: 10px;
-    color: var(--text-dim);
-    font-family: 'Space Mono', monospace;
-    margin-bottom: 4px;
-    display: block;
-  }
-
-  .api-input {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 10px;
-    color: var(--text);
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .api-input:focus { border-color: var(--accent); }
-
-  .save-keys-btn {
-    width: 100%;
-    padding: 8px;
-    background: var(--accent);
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 12px;
-    cursor: pointer;
-    transition: opacity 0.2s;
-    margin-top: 4px;
-  }
-
-  .save-keys-btn:hover { opacity: 0.85; }
-
-  /* ─── MAIN CHAT ─── */
-  #main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  /* Header */
-  .chat-header {
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: var(--surface);
-  }
-
-  .header-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-  }
-
-  .header-info h2 {
-    font-size: 16px;
-    font-weight: 700;
-  }
-
-  .header-info p {
-    font-size: 11px;
-    color: var(--text-dim);
-    font-family: 'Space Mono', monospace;
-  }
-
-  .header-actions { margin-left: auto; display: flex; gap: 8px; }
-
-  .header-btn {
-    padding: 6px 14px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text-dim);
-    font-family: 'Syne', sans-serif;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .header-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
+  /* MAIN */
+  #main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+  .chat-hdr{padding:14px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--surface);}
+  .hdr-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;}
+  .hdr-info h2{font-size:15px;font-weight:700;}
+  .hdr-info p{font-size:11px;color:var(--text-dim);font-family:'Space Mono',monospace;}
+  .hdr-acts{margin-left:auto;display:flex;gap:8px;align-items:center;}
+  .msel-wrap{position:relative;}
+  .msel{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 26px 6px 10px;color:var(--text);font-family:'Syne',sans-serif;font-size:12px;font-weight:600;cursor:pointer;outline:none;appearance:none;transition:border-color .2s;max-width:200px;}
+  .msel:focus{border-color:var(--accent);}
+  .msel-wrap::after{content:'▾';position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--text-dim);pointer-events:none;font-size:11px;}
+  .hdr-btn{padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-family:'Syne',sans-serif;font-size:12px;cursor:pointer;transition:all .2s;}
+  .hdr-btn:hover{border-color:var(--accent2);color:var(--accent2);}
 
   /* Messages */
-  #messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    scroll-behavior: smooth;
-  }
+  #messages{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth;}
+  #messages::-webkit-scrollbar{width:4px;}
+  #messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+  .msg{display:flex;gap:10px;animation:fu .3s ease;}
+  .msg.user{flex-direction:row-reverse;align-self:flex-end;max-width:75%;}
+  .msg.bot{align-self:flex-start;max-width:85%;}
+  @keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .mavatar{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;margin-top:2px;}
+  .mbubble{padding:11px 15px;border-radius:13px;font-size:13.5px;line-height:1.65;}
+  .msg.user .mbubble{background:#1e1a3a;border:1px solid var(--accent)44;border-bottom-right-radius:3px;}
+  .msg.bot .mbubble{background:#131320;border:1px solid var(--border);border-bottom-left-radius:3px;}
+  .mbubble pre{background:#0d0d15;border:1px solid var(--border);border-radius:8px;padding:12px;overflow-x:auto;margin:8px 0;font-family:'Space Mono',monospace;font-size:12px;line-height:1.5;white-space:pre-wrap;word-break:break-word;}
+  .mbubble code{font-family:'Space Mono',monospace;font-size:12px;background:#0d0d15;padding:2px 5px;border-radius:4px;}
+  .mbubble pre code{background:none;padding:0;}
+  .mbubble strong{color:var(--accent3);}
+  .mbubble ul,.mbubble ol{padding-left:20px;margin:6px 0;}
+  .mbubble li{margin-bottom:3px;}
+  .mbubble h3,.mbubble h4{color:var(--accent3);margin:8px 0 4px;}
+  .typing{display:flex;gap:4px;padding:13px 15px;background:#131320;border:1px solid var(--border);border-radius:13px;border-bottom-left-radius:3px;width:fit-content;}
+  .tdot{width:6px;height:6px;border-radius:50%;background:var(--text-dim);animation:b 1.2s infinite;}
+  .tdot:nth-child(2){animation-delay:.2s}.tdot:nth-child(3){animation-delay:.4s}
+  @keyframes b{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
+  .welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;gap:10px;}
+  .welcome-icon{font-size:46px;margin-bottom:6px;}
+  .welcome h2{font-size:22px;font-weight:800;}
+  .welcome p{color:var(--text-dim);font-size:13px;max-width:380px;line-height:1.6;}
 
-  #messages::-webkit-scrollbar { width: 4px; }
-  #messages::-webkit-scrollbar-track { background: transparent; }
-  #messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  /* Input */
+  .input-area{padding:14px 22px 18px;border-top:1px solid var(--border);background:var(--surface);}
+  .input-wrap{display:flex;gap:10px;background:var(--bg);border:1px solid var(--border);border-radius:13px;padding:9px 13px;transition:border-color .2s;}
+  .input-wrap:focus-within{border-color:var(--accent)88;}
+  #ui{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;resize:none;max-height:120px;line-height:1.5;}
+  #ui::placeholder{color:var(--text-dim);}
+  #sb{width:34px;height:34px;border-radius:9px;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;transition:all .2s;}
+  #sb:hover{opacity:.85;transform:scale(1.05);}
+  #sb:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+  #sb svg{width:15px;height:15px;fill:white;}
+  .input-hint{font-size:10px;color:var(--text-dim);text-align:center;margin-top:6px;font-family:'Space Mono',monospace;}
 
-  .msg {
-    display: flex;
-    gap: 12px;
-    animation: fadeUp 0.3s ease;
-    max-width: 820px;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .msg.user { flex-direction: row-reverse; align-self: flex-end; }
-  .msg.bot { align-self: flex-start; }
-
-  .msg-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  .msg-bubble {
-    padding: 12px 16px;
-    border-radius: 14px;
-    font-size: 14px;
-    line-height: 1.6;
-    max-width: 680px;
-  }
-
-  .msg.user .msg-bubble {
-    background: var(--user-bubble);
-    border: 1px solid var(--accent)44;
-    border-bottom-right-radius: 4px;
-  }
-
-  .msg.bot .msg-bubble {
-    background: var(--bot-bubble);
-    border: 1px solid var(--border);
-    border-bottom-left-radius: 4px;
-  }
-
-  .msg-bubble pre {
-    background: #0d0d15;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px;
-    overflow-x: auto;
-    margin: 8px 0;
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    line-height: 1.5;
-  }
-
-  .msg-bubble code {
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    background: #0d0d15;
-    padding: 2px 6px;
-    border-radius: 4px;
-  }
-
-  .typing-indicator {
-    display: flex;
-    gap: 4px;
-    padding: 14px 16px;
-    background: var(--bot-bubble);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    border-bottom-left-radius: 4px;
-    width: fit-content;
-  }
-
-  .typing-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--text-dim);
-    animation: bounce 1.2s infinite;
-  }
-
-  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes bounce {
-    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-    30% { transform: translateY(-6px); opacity: 1; }
-  }
-
-  /* Welcome screen */
-  .welcome {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 40px;
-    gap: 12px;
-  }
-
-  .welcome-icon { font-size: 48px; margin-bottom: 8px; }
-  .welcome h2 { font-size: 24px; font-weight: 800; }
-  .welcome p { color: var(--text-dim); font-size: 14px; max-width: 400px; line-height: 1.6; }
-
-  /* Input area */
-  .input-area {
-    padding: 16px 24px 20px;
-    border-top: 1px solid var(--border);
-    background: var(--surface);
-  }
-
-  .input-wrap {
-    display: flex;
-    gap: 10px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 10px 14px;
-    transition: border-color 0.2s;
-  }
-
-  .input-wrap:focus-within { border-color: var(--accent)88; }
-
-  #userInput {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    font-size: 14px;
-    resize: none;
-    max-height: 120px;
-    line-height: 1.5;
-  }
-
-  #userInput::placeholder { color: var(--text-dim); }
-
-  #sendBtn {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: var(--accent);
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    align-self: flex-end;
-    transition: all 0.2s;
-  }
-
-  #sendBtn:hover { opacity: 0.85; transform: scale(1.05); }
-  #sendBtn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
-  #sendBtn svg { width: 16px; height: 16px; fill: white; }
-
-  .input-hint {
-    font-size: 11px;
-    color: var(--text-dim);
-    text-align: center;
-    margin-top: 8px;
-    font-family: 'Space Mono', monospace;
-  }
-
-  /* ─── MODAL ─── */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: #00000088;
-    backdrop-filter: blur(4px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-  }
-
-  .modal-overlay.show { opacity: 1; pointer-events: all; }
-
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    width: 440px;
-    max-width: 90vw;
-    transform: scale(0.95);
-    transition: transform 0.2s;
-  }
-
-  .modal-overlay.show .modal { transform: scale(1); }
-
-  .modal h3 {
-    font-size: 18px;
-    font-weight: 800;
-    margin-bottom: 20px;
-  }
-
-  .form-group { margin-bottom: 14px; }
-
-  .form-label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .form-input, .form-select, .form-textarea {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 12px;
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .form-textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
-  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
-  .form-select option { background: var(--surface); }
-
-  .emoji-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 6px;
-  }
-
-  .emoji-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    cursor: pointer;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s;
-  }
-
-  .emoji-btn:hover, .emoji-btn.selected {
-    border-color: var(--accent);
-    background: var(--accent)22;
-  }
-
-  .color-grid {
-    display: flex;
-    gap: 8px;
-    margin-top: 6px;
-    flex-wrap: wrap;
-  }
-
-  .color-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    cursor: pointer;
-    transition: transform 0.15s;
-  }
-
-  .color-btn:hover { transform: scale(1.15); }
-  .color-btn.selected { border-color: white; }
-
-  .modal-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-    justify-content: flex-end;
-  }
-
-  .btn-cancel {
-    padding: 10px 20px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text-dim);
-    font-family: 'Syne', sans-serif;
-    font-weight: 600;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .btn-cancel:hover { border-color: var(--text-dim); color: var(--text); }
-
-  .btn-create {
-    padding: 10px 24px;
-    border-radius: 10px;
-    border: none;
-    background: var(--accent);
-    color: white;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 13px;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-
-  .btn-create:hover { opacity: 0.85; }
+  /* MODAL */
+  .overlay{position:fixed;inset:0;background:#00000088;backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s;}
+  .overlay.show{opacity:1;pointer-events:all;}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px;width:460px;max-width:92vw;max-height:90vh;overflow-y:auto;transform:scale(.95);transition:transform .2s;}
+  .overlay.show .modal{transform:scale(1);}
+  .modal h3{font-size:17px;font-weight:800;margin-bottom:18px;}
+  .fg{margin-bottom:13px;}
+  .fl{display:block;font-size:11px;font-weight:700;margin-bottom:5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;}
+  .fi,.fs,.fta{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:9px 11px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;outline:none;transition:border-color .2s;}
+  .fta{resize:vertical;min-height:90px;line-height:1.5;}
+  .fi:focus,.fs:focus,.fta:focus{border-color:var(--accent);}
+  .fs option,.fs optgroup{background:var(--surface);color:var(--text);}
+  .emoji-grid{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;}
+  .ebtn{width:34px;height:34px;border-radius:7px;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+  .ebtn:hover,.ebtn.sel{border-color:var(--accent);background:var(--accent)22;}
+  .color-grid{display:flex;gap:7px;flex-wrap:wrap;margin-top:5px;}
+  .cbtn{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .15s;}
+  .cbtn:hover{transform:scale(1.15);}
+  .cbtn.sel{border-color:white;transform:scale(1.1);}
+  .macts{display:flex;gap:8px;margin-top:18px;justify-content:flex-end;}
+  .bcncl{padding:9px 18px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-family:'Syne',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;}
+  .bcncl:hover{border-color:var(--text-dim);color:var(--text);}
+  .bsub{padding:9px 22px;border-radius:9px;border:none;background:var(--accent);color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:opacity .2s;}
+  .bsub:hover{opacity:.85;}
 
   /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 20px;
-    font-size: 13px;
-    font-weight: 600;
-    z-index: 200;
-    transform: translateY(20px);
-    opacity: 0;
-    transition: all 0.3s;
-  }
-
-  .toast.show { transform: translateY(0); opacity: 1; }
-  .toast.success { border-color: var(--accent3)88; color: var(--accent3); }
-  .toast.error { border-color: var(--accent2)88; color: var(--accent2); }
-
-  /* Scrollbar */
-  .bot-list::-webkit-scrollbar { width: 3px; }
-  .bot-list::-webkit-scrollbar-thumb { background: var(--border); }
-
-  @media (max-width: 600px) {
-    #sidebar { position: absolute; z-index: 50; height: 100%; transform: translateX(-100%); }
-    #sidebar.open { transform: translateX(0); }
-  }
+  .toast{position:fixed;bottom:22px;right:22px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 18px;font-size:13px;font-weight:600;z-index:200;transform:translateY(16px);opacity:0;transition:all .3s;}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast.ok{border-color:var(--accent3)88;color:var(--accent3);}
+  .toast.err{border-color:var(--accent2)88;color:var(--accent2);}
+  .bot-list::-webkit-scrollbar{width:3px;}
+  .bot-list::-webkit-scrollbar-thumb{background:var(--border);}
+  .modal::-webkit-scrollbar{width:4px;}
+  .modal::-webkit-scrollbar-thumb{background:var(--border);}
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <div id="sidebar">
   <div class="logo">
     <h1>⚡ AI Hub</h1>
     <p>your personal ai workspace</p>
   </div>
-
-  <div class="sidebar-label">Bots của bạn</div>
-
+  <div class="slabel">Bots của bạn</div>
   <div class="bot-list" id="botList"></div>
-
-  <button class="add-bot-btn" onclick="openModal()">
-    <span>＋</span> Tạo bot mới
-  </button>
-
-  <div class="api-section">
-    <div class="sidebar-label" style="padding: 0 10px 8px;">API Keys</div>
-    <div class="api-input-wrap">
-      <label class="api-label">CLAUDE (Anthropic)</label>
-      <input class="api-input" type="password" id="claudeKey" placeholder="sk-ant-api03-..." />
-    </div>
-    <div class="api-input-wrap">
-      <label class="api-label">OPENAI (ChatGPT)</label>
-      <input class="api-input" type="password" id="openaiKey" placeholder="sk-..." />
-    </div>
-    <div class="api-input-wrap">
-      <label class="api-label">PERPLEXITY</label>
-      <input class="api-input" type="password" id="perplexityKey" placeholder="pplx-..." />
-    </div>
-    <button class="save-keys-btn" onclick="saveKeys()">💾 Lưu API Keys</button>
+  <button class="add-btn" onclick="openModal()">＋ Tạo bot mới</button>
+  <div class="api-sec">
+    <div class="slabel" style="padding:0 10px 8px">API Keys</div>
+    <div class="arow"><label class="alabel">🟣 Claude (Anthropic)</label><input class="ainput" type="password" id="kc" placeholder="sk-ant-api03-..."/></div>
+    <div class="arow"><label class="alabel">🟢 OpenAI (ChatGPT)</label><input class="ainput" type="password" id="ko" placeholder="sk-..."/></div>
+    <div class="arow"><label class="alabel">🔵 Gemini (Google)</label><input class="ainput" type="password" id="kg" placeholder="AIza..."/></div>
+    <div class="arow"><label class="alabel">🩷 Perplexity</label><input class="ainput" type="password" id="kp" placeholder="pplx-..."/></div>
+    <button class="save-btn" onclick="saveKeys()">💾 Lưu API Keys</button>
   </div>
 </div>
 
-<!-- MAIN -->
 <div id="main">
-  <div class="chat-header" id="chatHeader">
-    <div class="header-icon" id="headerIcon" style="background:#1c1c26">🤖</div>
-    <div class="header-info">
-      <h2 id="headerName">Chọn một bot</h2>
-      <p id="headerModel">để bắt đầu chat</p>
-    </div>
-    <div class="header-actions">
-      <button class="header-btn" onclick="clearChat()">🗑 Xóa chat</button>
+  <div class="chat-hdr">
+    <div class="hdr-icon" id="hIcon" style="background:#1c1c26">🤖</div>
+    <div class="hdr-info"><h2 id="hName">Chọn một bot</h2><p id="hModel">để bắt đầu chat</p></div>
+    <div class="hdr-acts">
+      <div class="msel-wrap" id="mselWrap" style="display:none">
+        <select class="msel" id="msel" onchange="changeModel(this.value)"></select>
+      </div>
+      <button class="hdr-btn" onclick="clearChat()">🗑 Xóa chat</button>
     </div>
   </div>
-
   <div id="messages">
-    <div class="welcome" id="welcomeScreen">
+    <div class="welcome" id="ws">
       <div class="welcome-icon">⚡</div>
       <h2>AI Hub của bạn</h2>
-      <p>Chọn một bot từ menu bên trái hoặc tạo bot mới với system prompt và model riêng.</p>
+      <p>Chọn bot từ sidebar hoặc tạo bot mới với system prompt và model riêng.</p>
     </div>
   </div>
-
   <div class="input-area">
     <div class="input-wrap">
-      <textarea id="userInput" placeholder="Nhắn tin..." rows="1"
-        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-      <button id="sendBtn" onclick="sendMessage()">
-        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
-      </button>
+      <textarea id="ui" placeholder="Nhắn tin..." rows="1" onkeydown="hk(event)" oninput="ar(this)"></textarea>
+      <button id="sb" onclick="send()"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg></button>
     </div>
     <div class="input-hint">Enter để gửi · Shift+Enter xuống dòng</div>
   </div>
 </div>
 
-<!-- MODAL tạo bot -->
-<div class="modal-overlay" id="modalOverlay">
+<div class="overlay" id="ov">
   <div class="modal">
-    <h3>✨ Tạo Bot Mới</h3>
-
-    <div class="form-group">
-      <label class="form-label">Tên bot</label>
-      <input class="form-input" id="botName" placeholder="Vd: Email Bot, MC Bot..." />
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Icon</label>
-      <div class="emoji-grid" id="emojiGrid"></div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Màu</label>
-      <div class="color-grid" id="colorGrid"></div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Model AI</label>
-      <select class="form-select" id="botModel">
-        <optgroup label="Claude (Anthropic)">
-          <option value="claude">claude-3-5-sonnet-20241022</option>
-          <option value="claude-haiku">claude-3-haiku-20240307</option>
+    <h3 id="mTitle">✨ Tạo Bot Mới</h3>
+    <div class="fg"><label class="fl">Tên bot</label><input class="fi" id="bName" placeholder="Vd: Email Bot, MC Bot..."/></div>
+    <div class="fg"><label class="fl">Icon</label><div class="emoji-grid" id="eg"></div></div>
+    <div class="fg"><label class="fl">Màu sắc</label><div class="color-grid" id="cg"></div></div>
+    <div class="fg">
+      <label class="fl">Model AI</label>
+      <select class="fs" id="bModel">
+        <optgroup label="🟣 Claude (Anthropic)">
+          <option value="claude-sonnet">claude-3-5-sonnet — Thông minh, cân bằng</option>
+          <option value="claude-haiku">claude-3-haiku — Nhanh & nhẹ</option>
+          <option value="claude-opus">claude-3-opus — Mạnh nhất</option>
         </optgroup>
-        <optgroup label="OpenAI">
-          <option value="gpt4">gpt-4o</option>
-          <option value="gpt4mini">gpt-4o-mini</option>
+        <optgroup label="🟢 OpenAI (ChatGPT)">
+          <option value="gpt-4o">gpt-4o — Flagship</option>
+          <option value="gpt-4o-mini">gpt-4o-mini — Nhanh & rẻ</option>
+          <option value="gpt-4-turbo">gpt-4-turbo — Mạnh</option>
+          <option value="o1-mini">o1-mini — Suy luận logic</option>
         </optgroup>
-        <optgroup label="Perplexity">
-          <option value="perplexity">llama-3.1-sonar-large-128k-online</option>
+        <optgroup label="🔵 Gemini (Google)">
+          <option value="gemini-2.0-flash">gemini-2.0-flash — Mới nhất, nhanh</option>
+          <option value="gemini-1.5-pro">gemini-1.5-pro — Mạnh nhất</option>
+          <option value="gemini-1.5-flash">gemini-1.5-flash — Cân bằng</option>
+        </optgroup>
+        <optgroup label="🩷 Perplexity (Search AI)">
+          <option value="sonar-large">sonar-large — Tìm kiếm thực</option>
+          <option value="sonar-small">sonar-small — Tìm kiếm nhanh</option>
         </optgroup>
       </select>
     </div>
-
-    <div class="form-group">
-      <label class="form-label">System Prompt</label>
-      <textarea class="form-textarea" id="botPrompt"
-        placeholder="Mô tả vai trò của bot. Vd: Bạn là trợ lý chuyên soạn email chuyên nghiệp..."></textarea>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal()">Hủy</button>
-      <button class="btn-create" onclick="createBot()">Tạo Bot ✨</button>
+    <div class="fg"><label class="fl">System Prompt</label><textarea class="fta" id="bPrompt" placeholder="Mô tả vai trò bot. Vd: Bạn là trợ lý soạn email chuyên nghiệp..."></textarea></div>
+    <div class="macts">
+      <button class="bcncl" onclick="closeModal()">Hủy</button>
+      <button class="bsub" id="mBtn" onclick="submitBot()">Tạo Bot ✨</button>
     </div>
   </div>
 </div>
@@ -742,338 +223,310 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ─── STATE ───
-let bots = JSON.parse(localStorage.getItem('aihub_bots') || '[]');
-let apiKeys = JSON.parse(localStorage.getItem('aihub_keys') || '{}');
-let currentBot = null;
-let chatHistories = JSON.parse(localStorage.getItem('aihub_histories') || '{}');
-let selectedEmoji = '🤖';
-let selectedColor = '#7c6aff';
-let isLoading = false;
+const MODELS={
+  'claude-sonnet':{l:'Claude 3.5 Sonnet',p:'claude'},
+  'claude-haiku':{l:'Claude 3 Haiku',p:'claude'},
+  'claude-opus':{l:'Claude 3 Opus',p:'claude'},
+  'gpt-4o':{l:'GPT-4o',p:'openai'},
+  'gpt-4o-mini':{l:'GPT-4o mini',p:'openai'},
+  'gpt-4-turbo':{l:'GPT-4 Turbo',p:'openai'},
+  'o1-mini':{l:'o1-mini',p:'openai'},
+  'gemini-2.0-flash':{l:'Gemini 2.0 Flash',p:'gemini'},
+  'gemini-1.5-pro':{l:'Gemini 1.5 Pro',p:'gemini'},
+  'gemini-1.5-flash':{l:'Gemini 1.5 Flash',p:'gemini'},
+  'sonar-large':{l:'Perplexity Sonar L',p:'perplexity'},
+  'sonar-small':{l:'Perplexity Sonar S',p:'perplexity'},
+};
+const EMOJIS=['📧','🎤','💻','📊','🎨','📝','🔍','💡','🚀','⚡','🎯','🧠','🌐','📱','🎬','📚','💼','🛠️','✨','🤖','🏨','🍽️','✈️','💰','📣','🎪','🎭','🏆'];
+const COLORS=['#7c6aff','#ff6a9a','#6affd4','#ffd76a','#ff8c6a','#6ab4ff','#c26aff','#6aff8c','#ff6a6a','#6affff','#ffb86a','#a8ff6a'];
 
-const EMOJIS = ['🤖','📧','🎤','💻','📊','🎨','📝','🔍','💡','🚀','⚡','🎯','🧠','🌐','📱','🎬','📚','💼','🛠️','✨'];
-const COLORS = ['#7c6aff','#ff6a9a','#6affd4','#ffd76a','#ff8c6a','#6ab4ff','#c26aff','#6aff8c','#ff6a6a','#6affff'];
+let bots=JSON.parse(localStorage.getItem('ahb')||'[]');
+let keys=JSON.parse(localStorage.getItem('ahk')||'{}');
+let cur=null,am=null;
+let hist=JSON.parse(localStorage.getItem('ahh')||'{}');
+let se='🤖',sc='#7c6aff',loading=false,eid=null;
 
-// ─── DEFAULT BOTS ───
-if (bots.length === 0) {
-  bots = [
-    { id: 1, name: 'Email Bot', emoji: '📧', color: '#6ab4ff', model: 'claude', prompt: 'Bạn là trợ lý chuyên soạn và trả lời email chuyên nghiệp. Luôn viết lịch sự, rõ ràng, đúng ngữ pháp tiếng Việt. Khi soạn email hãy đưa ra subject line và nội dung đầy đủ.' },
-    { id: 2, name: 'MC Bot', emoji: '🎤', color: '#ff6a9a', model: 'claude', prompt: 'Bạn là MC chuyên nghiệp, giỏi dẫn chương trình sự kiện. Hỗ trợ viết kịch bản, lời dẫn, câu chuyển tiếp mượt mà và lôi cuốn.' },
-    { id: 3, name: 'Coding Bot', emoji: '💻', color: '#6affd4', model: 'gpt4', prompt: 'Bạn là senior software developer. Giải thích code rõ ràng, viết code sạch có comment, đưa ra best practices. Luôn giải thích tại sao làm như vậy.' },
-    { id: 4, name: 'Tìm kiếm', emoji: '🔍', color: '#ffd76a', model: 'perplexity', prompt: 'Bạn là trợ lý tìm kiếm thông tin. Cung cấp thông tin chính xác, cập nhật và có nguồn dẫn chứng rõ ràng.' },
+if(!bots.length){
+  bots=[
+    {id:1,name:'Email Bot',emoji:'📧',color:'#6ab4ff',model:'claude-sonnet',prompt:'Bạn là trợ lý chuyên soạn và trả lời email chuyên nghiệp. Luôn viết lịch sự, rõ ràng, đúng ngữ pháp tiếng Việt. Khi soạn email hãy đưa subject line và nội dung đầy đủ.'},
+    {id:2,name:'MC Bot',emoji:'🎤',color:'#ff6a9a',model:'claude-sonnet',prompt:'Bạn là MC chuyên nghiệp, giỏi dẫn chương trình sự kiện. Hỗ trợ viết kịch bản, lời dẫn, câu chuyển tiếp mượt mà và lôi cuốn bằng tiếng Việt.'},
+    {id:3,name:'Coding Bot',emoji:'💻',color:'#6affd4',model:'gpt-4o',prompt:'Bạn là senior software developer. Giải thích code rõ ràng, viết code sạch có comment, đưa ra best practices. Luôn giải thích tại sao làm như vậy.'},
+    {id:4,name:'Tìm kiếm',emoji:'🔍',color:'#ffd76a',model:'sonar-large',prompt:'Bạn là trợ lý tìm kiếm thông tin. Cung cấp thông tin chính xác, cập nhật và có nguồn dẫn chứng rõ ràng.'},
+    {id:5,name:'Gemini Pro',emoji:'🌐',color:'#ff8c6a',model:'gemini-1.5-pro',prompt:'Bạn là trợ lý đa năng thông minh. Hỗ trợ phân tích, tổng hợp thông tin, viết lách và giải quyết vấn đề phức tạp.'},
   ];
   saveBots();
 }
 
-// ─── INIT ───
-function init() {
-  renderBotList();
-  loadApiKeys();
-  buildEmojiGrid();
-  buildColorGrid();
+function saveBots(){localStorage.setItem('ahb',JSON.stringify(bots));}
+function saveHist(){localStorage.setItem('ahh',JSON.stringify(hist));}
+
+function init(){
+  renderList();
+  if(keys.claude) document.getElementById('kc').value=keys.claude;
+  if(keys.openai) document.getElementById('ko').value=keys.openai;
+  if(keys.gemini) document.getElementById('kg').value=keys.gemini;
+  if(keys.perplexity) document.getElementById('kp').value=keys.perplexity;
+  buildEG(); buildCG();
 }
 
-function saveBots() { localStorage.setItem('aihub_bots', JSON.stringify(bots)); }
-function saveHistories() { localStorage.setItem('aihub_histories', JSON.stringify(chatHistories)); }
-
-function loadApiKeys() {
-  if (apiKeys.claude) document.getElementById('claudeKey').value = apiKeys.claude;
-  if (apiKeys.openai) document.getElementById('openaiKey').value = apiKeys.openai;
-  if (apiKeys.perplexity) document.getElementById('perplexityKey').value = apiKeys.perplexity;
+function saveKeys(){
+  keys={claude:document.getElementById('kc').value.trim(),openai:document.getElementById('ko').value.trim(),gemini:document.getElementById('kg').value.trim(),perplexity:document.getElementById('kp').value.trim()};
+  localStorage.setItem('ahk',JSON.stringify(keys));
+  toast('✅ Đã lưu API keys!','ok');
 }
 
-function saveKeys() {
-  apiKeys = {
-    claude: document.getElementById('claudeKey').value.trim(),
-    openai: document.getElementById('openaiKey').value.trim(),
-    perplexity: document.getElementById('perplexityKey').value.trim(),
-  };
-  localStorage.setItem('aihub_keys', JSON.stringify(apiKeys));
-  showToast('✅ Đã lưu API keys!', 'success');
-}
-
-// ─── BOT LIST ───
-function renderBotList() {
-  const list = document.getElementById('botList');
-  list.innerHTML = bots.map(bot => `
-    <div class="bot-item ${currentBot?.id === bot.id ? 'active' : ''}" onclick="selectBot(${bot.id})">
-      <div class="bot-icon" style="background:${bot.color}22">${bot.emoji}</div>
-      <div class="bot-info">
-        <div class="bot-name">${bot.name}</div>
-        <div class="bot-model">${getModelLabel(bot.model)}</div>
+function renderList(){
+  document.getElementById('botList').innerHTML=bots.map(b=>{
+    const m=MODELS[b.model]||{};
+    return`<div class="bot-item ${cur?.id===b.id?'active':''}" onclick="selBot(${b.id})">
+      <div class="bot-icon" style="background:${b.color}22">${b.emoji}</div>
+      <div class="bot-info"><div class="bot-name">${b.name}</div><div class="bot-mtag">${m.l||b.model}</div></div>
+      <div class="bot-acts">
+        <button class="bab" onclick="editBot(event,${b.id})">✏️</button>
+        <button class="bab" onclick="delBot(event,${b.id})">🗑</button>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
-function getModelLabel(model) {
-  const map = { claude: 'Claude Sonnet', 'claude-haiku': 'Claude Haiku', gpt4: 'GPT-4o', gpt4mini: 'GPT-4o mini', perplexity: 'Perplexity' };
-  return map[model] || model;
+function selBot(id){
+  cur=bots.find(b=>b.id===id);
+  if(!cur)return;
+  am=cur.model;
+  updateHdr();
+  renderList();
+  renderMsgs();
 }
 
-function selectBot(id) {
-  currentBot = bots.find(b => b.id === id);
-  if (!currentBot) return;
-
-  document.getElementById('headerIcon').textContent = currentBot.emoji;
-  document.getElementById('headerIcon').style.background = currentBot.color + '22';
-  document.getElementById('headerName').textContent = currentBot.name;
-  document.getElementById('headerModel').textContent = getModelLabel(currentBot.model);
-
-  renderBotList();
-  renderMessages();
+function updateHdr(){
+  if(!cur)return;
+  document.getElementById('hIcon').textContent=cur.emoji;
+  document.getElementById('hIcon').style.background=cur.color+'22';
+  document.getElementById('hName').textContent=cur.name;
+  document.getElementById('hModel').textContent=(MODELS[am]||{}).l||am;
+  const wrap=document.getElementById('mselWrap');
+  const sel=document.getElementById('msel');
+  wrap.style.display='block';
+  sel.innerHTML=Object.entries(MODELS).map(([k,v])=>`<option value="${k}" ${k===am?'selected':''}>${v.l}</option>`).join('');
 }
 
-// ─── MESSAGES ───
-function renderMessages() {
-  const container = document.getElementById('messages');
-  const history = chatHistories[currentBot.id] || [];
+function changeModel(v){
+  am=v;
+  document.getElementById('hModel').textContent=(MODELS[v]||{}).l||v;
+  toast('🔄 '+(MODELS[v]||{}).l,'ok');
+}
 
-  if (history.length === 0) {
-    container.innerHTML = `
-      <div class="welcome">
-        <div class="welcome-icon">${currentBot.emoji}</div>
-        <h2>${currentBot.name}</h2>
-        <p style="color:var(--text-dim);font-size:13px;font-family:'Space Mono',monospace;margin-top:4px">${getModelLabel(currentBot.model)}</p>
-        <p style="margin-top:12px">${currentBot.prompt.substring(0, 100)}...</p>
-      </div>`;
+function renderMsgs(){
+  const c=document.getElementById('messages');
+  const h=hist[cur.id]||[];
+  if(!h.length){
+    c.innerHTML=`<div class="welcome"><div class="welcome-icon">${cur.emoji}</div><h2>${cur.name}</h2><p style="color:var(--accent);font-size:12px;font-family:'Space Mono',monospace;margin-top:2px">${(MODELS[cur.model]||{}).l||cur.model}</p><p style="margin-top:10px;font-size:13px">${cur.prompt.substring(0,120)}...</p></div>`;
     return;
   }
-
-  container.innerHTML = history.map(msg => `
-    <div class="msg ${msg.role}">
-      <div class="msg-avatar" style="background:${msg.role === 'user' ? '#1e1a3a' : currentBot.color + '22'}">
-        ${msg.role === 'user' ? '👤' : currentBot.emoji}
-      </div>
-      <div class="msg-bubble">${formatMessage(msg.content)}</div>
-    </div>
-  `).join('');
-
-  container.scrollTop = container.scrollHeight;
+  c.innerHTML=h.map(m=>`<div class="msg ${m.r}">
+    <div class="mavatar" style="background:${m.r==='user'?'#1e1a3a':cur.color+'22'}">${m.r==='user'?'👤':cur.emoji}</div>
+    <div class="mbubble">${fmt(m.c)}</div>
+  </div>`).join('');
+  c.scrollTop=c.scrollHeight;
 }
 
-function formatMessage(text) {
-  // Code blocks
-  text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
-  // Inline code
-  text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
-  // Bold
-  text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  // Line breaks
-  text = text.replace(/\n/g, '<br>');
-  return text;
+function fmt(t){
+  t=t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  t=t.replace(/```(\w*)\n?([\s\S]*?)```/g,(_,l,c)=>`<pre><code>${c.trim()}</code></pre>`);
+  t=t.replace(/`([^`\n]+)`/g,'<code>$1</code>');
+  t=t.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  t=t.replace(/\*([^*\n]+)\*/g,'<em>$1</em>');
+  t=t.replace(/^#{3} (.+)$/gm,'<h4 style="margin:8px 0 4px;color:var(--accent3)">$1</h4>');
+  t=t.replace(/^#{2} (.+)$/gm,'<h3 style="margin:10px 0 5px;color:var(--accent3)">$1</h3>');
+  t=t.replace(/^- (.+)$/gm,'<li style="margin-left:16px">$1</li>');
+  t=t.replace(/\n/g,'<br>');
+  return t;
 }
 
-function clearChat() {
-  if (!currentBot) return;
-  chatHistories[currentBot.id] = [];
-  saveHistories();
-  renderMessages();
+function clearChat(){
+  if(!cur)return;
+  if(!confirm(`Xóa lịch sử chat của "${cur.name}"?`))return;
+  hist[cur.id]=[];saveHist();renderMsgs();
 }
 
-// ─── SEND ───
-async function sendMessage() {
-  if (isLoading || !currentBot) return;
-  const input = document.getElementById('userInput');
-  const text = input.value.trim();
-  if (!text) return;
+async function send(){
+  if(loading||!cur)return;
+  const inp=document.getElementById('ui');
+  const txt=inp.value.trim();
+  if(!txt)return;
+  inp.value='';inp.style.height='auto';
+  if(!hist[cur.id])hist[cur.id]=[];
+  hist[cur.id].push({r:'user',c:txt});
+  saveHist();renderMsgs();
 
-  input.value = '';
-  input.style.height = 'auto';
+  const container=document.getElementById('messages');
+  const te=document.createElement('div');
+  te.className='msg bot';te.id='ty';
+  te.innerHTML=`<div class="mavatar" style="background:${cur.color}22">${cur.emoji}</div><div class="typing"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>`;
+  container.appendChild(te);container.scrollTop=container.scrollHeight;
 
-  if (!chatHistories[currentBot.id]) chatHistories[currentBot.id] = [];
-  chatHistories[currentBot.id].push({ role: 'user', content: text });
-  saveHistories();
-  renderMessages();
-
-  // Show typing
-  const container = document.getElementById('messages');
-  const typingEl = document.createElement('div');
-  typingEl.className = 'msg bot';
-  typingEl.id = 'typing';
-  typingEl.innerHTML = `
-    <div class="msg-avatar" style="background:${currentBot.color}22">${currentBot.emoji}</div>
-    <div class="typing-indicator">
-      <div class="typing-dot"></div>
-      <div class="typing-dot"></div>
-      <div class="typing-dot"></div>
-    </div>`;
-  container.appendChild(typingEl);
-  container.scrollTop = container.scrollHeight;
-
-  isLoading = true;
-  document.getElementById('sendBtn').disabled = true;
-
-  try {
-    const response = await callAPI(currentBot, chatHistories[currentBot.id]);
-    document.getElementById('typing')?.remove();
-    chatHistories[currentBot.id].push({ role: 'bot', content: response });
-    saveHistories();
-    renderMessages();
-  } catch (err) {
-    document.getElementById('typing')?.remove();
-    chatHistories[currentBot.id].push({ role: 'bot', content: '⚠️ Lỗi: ' + err.message });
-    saveHistories();
-    renderMessages();
+  loading=true;document.getElementById('sb').disabled=true;
+  try{
+    const rep=await callAPI(am,cur.prompt,hist[cur.id]);
+    document.getElementById('ty')?.remove();
+    hist[cur.id].push({r:'bot',c:rep});
+    saveHist();renderMsgs();
+  }catch(err){
+    document.getElementById('ty')?.remove();
+    hist[cur.id].push({r:'bot',c:'⚠️ Lỗi: '+err.message});
+    saveHist();renderMsgs();
+    toast('❌ '+err.message,'err');
   }
-
-  isLoading = false;
-  document.getElementById('sendBtn').disabled = false;
+  loading=false;document.getElementById('sb').disabled=false;
+  document.getElementById('ui').focus();
 }
 
-async function callAPI(bot, history) {
-  const messages = history.slice(0, -1).map(m => ({
-    role: m.role === 'bot' ? 'assistant' : 'user',
-    content: m.content
-  }));
-  const lastMsg = history[history.length - 1].content;
+async function callAPI(mk,sys,h){
+  const m=MODELS[mk];if(!m)throw new Error('Model không hợp lệ');
+  const msgs=h.slice(0,-1).map(x=>({role:x.r==='bot'?'assistant':'user',content:x.c}));
+  const last=h[h.length-1].c;
+  if(m.p==='claude')return callClaude(mk,sys,msgs,last);
+  if(m.p==='openai')return callOAI(mk,sys,msgs,last);
+  if(m.p==='gemini')return callGemini(mk,sys,msgs,last);
+  if(m.p==='perplexity')return callPPX(mk,sys,msgs,last);
+  throw new Error('Provider lỗi');
+}
 
-  if (bot.model === 'claude' || bot.model === 'claude-haiku') {
-    if (!apiKeys.claude) throw new Error('Chưa nhập Claude API key! Vui lòng nhập ở sidebar.');
-    const modelName = bot.model === 'claude' ? 'claude-3-5-sonnet-20241022' : 'claude-3-haiku-20240307';
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKeys.claude,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-calls': 'true'
-      },
-      body: JSON.stringify({
-        model: modelName,
-        max_tokens: 2048,
-        system: bot.prompt,
-        messages: [...messages, { role: 'user', content: lastMsg }]
-      })
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error?.message || 'Claude API error');
-    }
-    const data = await res.json();
-    return data.content[0].text;
+async function callClaude(mk,sys,msgs,last){
+  if(!keys.claude)throw new Error('Chưa nhập Claude API key!');
+  const mmap={'claude-sonnet':'claude-3-5-sonnet-20241022','claude-haiku':'claude-3-haiku-20240307','claude-opus':'claude-3-opus-20240229'};
+  const r=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':keys.claude,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-calls':'true'},
+    body:JSON.stringify({model:mmap[mk]||mk,max_tokens:2048,system:sys,messages:[...msgs,{role:'user',content:last}]})
+  });
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'Claude lỗi '+r.status);}
+  return (await r.json()).content[0].text;
+}
 
-  } else if (bot.model === 'gpt4' || bot.model === 'gpt4mini') {
-    if (!apiKeys.openai) throw new Error('Chưa nhập OpenAI API key! Vui lòng nhập ở sidebar.');
-    const modelName = bot.model === 'gpt4' ? 'gpt-4o' : 'gpt-4o-mini';
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKeys.openai}` },
-      body: JSON.stringify({
-        model: modelName,
-        messages: [{ role: 'system', content: bot.prompt }, ...messages, { role: 'user', content: lastMsg }]
-      })
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error?.message || 'OpenAI API error');
-    }
-    const data = await res.json();
-    return data.choices[0].message.content;
+async function callOAI(mk,sys,msgs,last){
+  if(!keys.openai)throw new Error('Chưa nhập OpenAI API key!');
+  const r=await fetch('https://api.openai.com/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+keys.openai},
+    body:JSON.stringify({model:mk,messages:[{role:'system',content:sys},...msgs,{role:'user',content:last}]})
+  });
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'OpenAI lỗi '+r.status);}
+  return (await r.json()).choices[0].message.content;
+}
 
-  } else if (bot.model === 'perplexity') {
-    if (!apiKeys.perplexity) throw new Error('Chưa nhập Perplexity API key! Vui lòng nhập ở sidebar.');
-    const res = await fetch('https://api.perplexity.ai/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKeys.perplexity}` },
-      body: JSON.stringify({
-        model: 'llama-3.1-sonar-large-128k-online',
-        messages: [{ role: 'system', content: bot.prompt }, ...messages, { role: 'user', content: lastMsg }]
-      })
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error?.message || 'Perplexity API error');
-    }
-    const data = await res.json();
-    return data.choices[0].message.content;
+async function callGemini(mk,sys,msgs,last){
+  if(!keys.gemini)throw new Error('Chưa nhập Gemini API key!');
+  const gmap={'gemini-2.0-flash':'gemini-2.0-flash','gemini-1.5-pro':'gemini-1.5-pro','gemini-1.5-flash':'gemini-1.5-flash'};
+  const mn=gmap[mk]||'gemini-1.5-flash';
+  const url=`https://generativelanguage.googleapis.com/v1beta/models/${mn}:generateContent?key=${keys.gemini}`;
+  const contents=[];
+  msgs.forEach(m=>contents.push({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]}));
+  contents.push({role:'user',parts:[{text:last}]});
+  const r=await fetch(url,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents,generationConfig:{maxOutputTokens:2048,temperature:0.7}})
+  });
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'Gemini lỗi '+r.status);}
+  const d=await r.json();
+  return d.candidates?.[0]?.content?.parts?.[0]?.text||'Không có phản hồi';
+}
+
+async function callPPX(mk,sys,msgs,last){
+  if(!keys.perplexity)throw new Error('Chưa nhập Perplexity API key!');
+  const pmap={'sonar-large':'llama-3.1-sonar-large-128k-online','sonar-small':'llama-3.1-sonar-small-128k-online'};
+  const r=await fetch('https://api.perplexity.ai/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+keys.perplexity},
+    body:JSON.stringify({model:pmap[mk]||mk,messages:[{role:'system',content:sys},...msgs,{role:'user',content:last}]})
+  });
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'Perplexity lỗi '+r.status);}
+  return (await r.json()).choices[0].message.content;
+}
+
+/* MODAL */
+function buildEG(){
+  document.getElementById('eg').innerHTML=EMOJIS.map(e=>`<button class="ebtn ${e===se?'sel':''}" onclick="selE('${e}')">${e}</button>`).join('');
+}
+function buildCG(){
+  document.getElementById('cg').innerHTML=COLORS.map(c=>`<div class="cbtn ${c===sc?'sel':''}" style="background:${c}" onclick="selC('${c}')"></div>`).join('');
+}
+function selE(e){se=e;buildEG();}
+function selC(c){sc=c;buildCG();}
+
+function openModal(id=null){
+  eid=id;
+  if(id){
+    const b=bots.find(x=>x.id===id);if(!b)return;
+    document.getElementById('mTitle').textContent='✏️ Sửa Bot';
+    document.getElementById('mBtn').textContent='Lưu thay đổi';
+    document.getElementById('bName').value=b.name;
+    document.getElementById('bModel').value=b.model;
+    document.getElementById('bPrompt').value=b.prompt;
+    se=b.emoji;sc=b.color;
+  }else{
+    document.getElementById('mTitle').textContent='✨ Tạo Bot Mới';
+    document.getElementById('mBtn').textContent='Tạo Bot ✨';
+    document.getElementById('bName').value='';
+    document.getElementById('bModel').value='claude-sonnet';
+    document.getElementById('bPrompt').value='';
+    se='🤖';sc='#7c6aff';
   }
-
-  throw new Error('Model không hợp lệ');
+  buildEG();buildCG();
+  document.getElementById('ov').classList.add('show');
+  setTimeout(()=>document.getElementById('bName').focus(),100);
 }
+function closeModal(){document.getElementById('ov').classList.remove('show');eid=null;}
 
-// ─── MODAL ───
-function buildEmojiGrid() {
-  document.getElementById('emojiGrid').innerHTML = EMOJIS.map(e => `
-    <button class="emoji-btn ${e === selectedEmoji ? 'selected' : ''}" onclick="selectEmoji('${e}')">${e}</button>
-  `).join('');
-}
-
-function buildColorGrid() {
-  document.getElementById('colorGrid').innerHTML = COLORS.map(c => `
-    <div class="color-btn ${c === selectedColor ? 'selected' : ''}"
-      style="background:${c}"
-      onclick="selectColor('${c}')"></div>
-  `).join('');
-}
-
-function selectEmoji(e) {
-  selectedEmoji = e;
-  buildEmojiGrid();
-}
-
-function selectColor(c) {
-  selectedColor = c;
-  buildColorGrid();
-}
-
-function openModal() {
-  document.getElementById('modalOverlay').classList.add('show');
-  document.getElementById('botName').focus();
-}
-
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('show');
-  document.getElementById('botName').value = '';
-  document.getElementById('botPrompt').value = '';
-}
-
-function createBot() {
-  const name = document.getElementById('botName').value.trim();
-  const model = document.getElementById('botModel').value;
-  const prompt = document.getElementById('botPrompt').value.trim();
-
-  if (!name) { showToast('⚠️ Nhập tên bot nhé!', 'error'); return; }
-  if (!prompt) { showToast('⚠️ Nhập system prompt nhé!', 'error'); return; }
-
-  const newBot = {
-    id: Date.now(),
-    name, emoji: selectedEmoji, color: selectedColor, model, prompt
-  };
-
-  bots.push(newBot);
-  saveBots();
-  renderBotList();
-  closeModal();
-  selectBot(newBot.id);
-  showToast(`✨ Đã tạo ${name}!`, 'success');
-}
-
-// ─── UTILS ───
-function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
+function submitBot(){
+  const name=document.getElementById('bName').value.trim();
+  const model=document.getElementById('bModel').value;
+  const prompt=document.getElementById('bPrompt').value.trim();
+  if(!name){toast('⚠️ Nhập tên bot nhé!','err');return;}
+  if(!prompt){toast('⚠️ Nhập system prompt nhé!','err');return;}
+  if(eid){
+    const i=bots.findIndex(b=>b.id===eid);
+    if(i>-1){
+      bots[i]={...bots[i],name,emoji:se,color:sc,model,prompt};
+      if(cur?.id===eid){cur=bots[i];am=model;updateHdr();}
+      toast('✅ Đã cập nhật '+name,'ok');
+    }
+  }else{
+    const nb={id:Date.now(),name,emoji:se,color:sc,model,prompt};
+    bots.push(nb);saveBots();renderList();closeModal();selBot(nb.id);
+    toast('✨ Đã tạo '+name,'ok');return;
   }
+  saveBots();renderList();closeModal();
 }
 
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+function editBot(e,id){e.stopPropagation();openModal(id);}
+function delBot(e,id){
+  e.stopPropagation();
+  const b=bots.find(x=>x.id===id);if(!b)return;
+  if(!confirm(`Xóa bot "${b.name}"?`))return;
+  bots=bots.filter(x=>x.id!==id);delete hist[id];
+  saveBots();saveHist();
+  if(cur?.id===id){
+    cur=null;am=null;
+    document.getElementById('hName').textContent='Chọn một bot';
+    document.getElementById('hModel').textContent='để bắt đầu chat';
+    document.getElementById('hIcon').textContent='🤖';
+    document.getElementById('mselWrap').style.display='none';
+    document.getElementById('messages').innerHTML='<div class="welcome"><div class="welcome-icon">⚡</div><h2>AI Hub của bạn</h2><p>Chọn bot từ sidebar hoặc tạo bot mới.</p></div>';
+  }
+  renderList();toast('🗑 Đã xóa '+b.name,'ok');
 }
 
-function showToast(msg, type = 'success') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = `toast ${type} show`;
-  setTimeout(() => t.classList.remove('show'), 2500);
+function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
+function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className=`toast ${type} show`;
+  setTimeout(()=>t.classList.remove('show'),2800);
 }
 
-// Close modal on overlay click
-document.getElementById('modalOverlay').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
-
+document.getElementById('ov').addEventListener('click',function(e){if(e.target===this)closeModal();});
 init();
 </script>
 </body>
