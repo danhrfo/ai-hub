@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c26;
+    --border: #2a2a3a;
+    --accent: #7c6aff;
+    --accent2: #ff6a9a;
+    --accent3: #6affd4;
+    --text: #e8e8f0;
+    --text-dim: #8888a0;
+    --user-bubble: #1e1a3a;
+    --bot-bubble: #131320;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* ─── SIDEBAR ─── */
+  #sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    transition: transform 0.3s;
+  }
+
+  .logo {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .logo h1 {
+    font-size: 22px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+  }
+
+  .logo p {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 2px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    padding: 0 20px 8px;
+    text-transform: uppercase;
+  }
+
+  .bot-list { padding: 0 10px; flex: 1; overflow-y: auto; }
+
+  .bot-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 4px;
+    border: 1px solid transparent;
+  }
+
+  .bot-item:hover { background: var(--surface2); }
+
+  .bot-item.active {
+    background: var(--surface2);
+    border-color: var(--border);
+  }
+
+  .bot-item.active .bot-icon { box-shadow: 0 0 12px var(--accent)44; }
+
+  .bot-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .bot-info { overflow: hidden; }
+
+  .bot-name {
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .bot-model {
+    font-size: 10px;
+    color: var(--text-dim);
+    font-family: 'Space Mono', monospace;
+  }
+
+  .add-bot-btn {
+    margin: 10px;
+    padding: 10px;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .add-bot-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent)11;
+  }
+
+  .api-section {
+    padding: 16px 10px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+
+  .api-input-wrap {
+    position: relative;
+    margin-bottom: 8px;
+  }
+
+  .api-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .api-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .api-input:focus { border-color: var(--accent); }
+
+  .save-keys-btn {
+    width: 100%;
+    padding: 8px;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 4px;
+  }
+
+  .save-keys-btn:hover { opacity: 0.85; }
+
+  /* ─── MAIN CHAT ─── */
+  #main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Header */
+  .chat-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--surface);
+  }
+
+  .header-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .header-info h2 {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .header-info p {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'Space Mono', monospace;
+  }
+
+  .header-actions { margin-left: auto; display: flex; gap: 8px; }
+
+  .header-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .header-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Messages */
+  #messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scroll-behavior: smooth;
+  }
+
+  #messages::-webkit-scrollbar { width: 4px; }
+  #messages::-webkit-scrollbar-track { background: transparent; }
+  #messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .msg {
+    display: flex;
+    gap: 12px;
+    animation: fadeUp 0.3s ease;
+    max-width: 820px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg.user { flex-direction: row-reverse; align-self: flex-end; }
+  .msg.bot { align-self: flex-start; }
+
+  .msg-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .msg-bubble {
+    padding: 12px 16px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 680px;
+  }
+
+  .msg.user .msg-bubble {
+    background: var(--user-bubble);
+    border: 1px solid var(--accent)44;
+    border-bottom-right-radius: 4px;
+  }
+
+  .msg.bot .msg-bubble {
+    background: var(--bot-bubble);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg-bubble pre {
+    background: #0d0d15;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    overflow-x: auto;
+    margin: 8px 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .msg-bubble code {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    background: #0d0d15;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .typing-indicator {
+    display: flex;
+    gap: 4px;
+    padding: 14px 16px;
+    background: var(--bot-bubble);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    border-bottom-left-radius: 4px;
+    width: fit-content;
+  }
+
+  .typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    animation: bounce 1.2s infinite;
+  }
+
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-6px); opacity: 1; }
+  }
+
+  /* Welcome screen */
+  .welcome {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+    gap: 12px;
+  }
+
+  .welcome-icon { font-size: 48px; margin-bottom: 8px; }
+  .welcome h2 { font-size: 24px; font-weight: 800; }
+  .welcome p { color: var(--text-dim); font-size: 14px; max-width: 400px; line-height: 1.6; }
+
+  /* Input area */
+  .input-area {
+    padding: 16px 24px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .input-wrap {
+    display: flex;
+    gap: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 10px 14px;
+    transition: border-color 0.2s;
+  }
+
+  .input-wrap:focus-within { border-color: var(--accent)88; }
+
+  #userInput {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    resize: none;
+    max-height: 120px;
+    line-height: 1.5;
+  }
+
+  #userInput::placeholder { color: var(--text-dim); }
+
+  #sendBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--accent);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    align-self: flex-end;
+    transition: all 0.2s;
+  }
+
+  #sendBtn:hover { opacity: 0.85; transform: scale(1.05); }
+  #sendBtn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  #sendBtn svg { width: 16px; height: 16px; fill: white; }
+
+  .input-hint {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: center;
+    margin-top: 8px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ─── MODAL ─── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: #00000088;
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .modal-overlay.show { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    width: 440px;
+    max-width: 90vw;
+    transform: scale(0.95);
+    transition: transform 0.2s;
+  }
+
+  .modal-overlay.show .modal { transform: scale(1); }
+
+  .modal h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 20px;
+  }
+
+  .form-group { margin-bottom: 14px; }
+
+  .form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-select option { background: var(--surface); }
+
+  .emoji-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .emoji-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .emoji-btn:hover, .emoji-btn.selected {
+    border-color: var(--accent);
+    background: var(--accent)22;
+  }
+
+  .color-grid {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+
+  .color-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+
+  .color-btn:hover { transform: scale(1.15); }
+  .color-btn.selected { border-color: white; }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: flex-end;
+  }
+
+  .btn-cancel {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-cancel:hover { border-color: var(--text-dim); color: var(--text); }
+
+  .btn-create {
+    padding: 10px 24px;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent);
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn-create:hover { opacity: 0.85; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 200;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.3s;
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-color: var(--accent3)88; color: var(--accent3); }
+  .toast.error { border-color: var(--accent2)88; color: var(--accent2); }
+
+  /* Scrollbar */
+  .bot-list::-webkit-scrollbar { width: 3px; }
+  .bot-list::-webkit-scrollbar-thumb { background: var(--border); }
+
+  @media (max-width: 600px) {
+    #sidebar { position: absolute; z-index: 50; height: 100%; transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="logo">
+    <h1>⚡ AI Hub</h1>
+    <p>your personal ai workspace</p>
+  </div>
+
+  <div class="sidebar-label">Bots của bạn</div>
+
+  <div class="bot-list" id="botList"></div>
+
+  <button class="add-bot-btn" onclick="openModal()">
+    <span>＋</span> Tạo bot mới
+  </button>
+
+  <div class="api-section">
+    <div class="sidebar-label" style="padding: 0 10px 8px;">API Keys</div>
+    <div class="api-input-wrap">
+      <label class="api-label">CLAUDE (Anthropic)</label>
+      <input class="api-input" type="password" id="claudeKey" placeholder="sk-ant-api03-..." />
+    </div>
+    <div class="api-input-wrap">
+      <label class="api-label">OPENAI (ChatGPT)</label>
+      <input class="api-input" type="password" id="openaiKey" placeholder="sk-..." />
+    </div>
+    <div class="api-input-wrap">
+      <label class="api-label">PERPLEXITY</label>
+      <input class="api-input" type="password" id="perplexityKey" placeholder="pplx-..." />
+    </div>
+    <button class="save-keys-btn" onclick="saveKeys()">💾 Lưu API Keys</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <div class="chat-header" id="chatHeader">
+    <div class="header-icon" id="headerIcon" style="background:#1c1c26">🤖</div>
+    <div class="header-info">
+      <h2 id="headerName">Chọn một bot</h2>
+      <p id="headerModel">để bắt đầu chat</p>
+    </div>
+    <div class="header-actions">
+      <button class="header-btn" onclick="clearChat()">🗑 Xóa chat</button>
+    </div>
+  </div>
+
+  <div id="messages">
+    <div class="welcome" id="welcomeScreen">
+      <div class="welcome-icon">⚡</div>
+      <h2>AI Hub của bạn</h2>
+      <p>Chọn một bot từ menu bên trái hoặc tạo bot mới với system prompt và model riêng.</p>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-wrap">
+      <textarea id="userInput" placeholder="Nhắn tin..." rows="1"
+        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button id="sendBtn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+      </button>
+    </div>
+    <div class="input-hint">Enter để gửi · Shift+Enter xuống dòng</div>
+  </div>
+</div>
+
+<!-- MODAL tạo bot -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3>✨ Tạo Bot Mới</h3>
+
+    <div class="form-group">
+      <label class="form-label">Tên bot</label>
+      <input class="form-input" id="botName" placeholder="Vd: Email Bot, MC Bot..." />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Icon</label>
+      <div class="emoji-grid" id="emojiGrid"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Màu</label>
+      <div class="color-grid" id="colorGrid"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Model AI</label>
+      <select class="form-select" id="botModel">
+        <optgroup label="Claude (Anthropic)">
+          <option value="claude">claude-3-5-sonnet-20241022</option>
+          <option value="claude-haiku">claude-3-haiku-20240307</option>
+        </optgroup>
+        <optgroup label="OpenAI">
+          <option value="gpt4">gpt-4o</option>
+          <option value="gpt4mini">gpt-4o-mini</option>
+        </optgroup>
+        <optgroup label="Perplexity">
+          <option value="perplexity">llama-3.1-sonar-large-128k-online</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">System Prompt</label>
+      <textarea class="form-textarea" id="botPrompt"
+        placeholder="Mô tả vai trò của bot. Vd: Bạn là trợ lý chuyên soạn email chuyên nghiệp..."></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Hủy</button>
+      <button class="btn-create" onclick="createBot()">Tạo Bot ✨</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── STATE ───
+let bots = JSON.parse(localStorage.getItem('aihub_bots') || '[]');
+let apiKeys = JSON.parse(localStorage.getItem('aihub_keys') || '{}');
+let currentBot = null;
+let chatHistories = JSON.parse(localStorage.getItem('aihub_histories') || '{}');
+let selectedEmoji = '🤖';
+let selectedColor = '#7c6aff';
+let isLoading = false;
+
+const EMOJIS = ['🤖','📧','🎤','💻','📊','🎨','📝','🔍','💡','🚀','⚡','🎯','🧠','🌐','📱','🎬','📚','💼','🛠️','✨'];
+const COLORS = ['#7c6aff','#ff6a9a','#6affd4','#ffd76a','#ff8c6a','#6ab4ff','#c26aff','#6aff8c','#ff6a6a','#6affff'];
+
+// ─── DEFAULT BOTS ───
+if (bots.length === 0) {
+  bots = [
+    { id: 1, name: 'Email Bot', emoji: '📧', color: '#6ab4ff', model: 'claude', prompt: 'Bạn là trợ lý chuyên soạn và trả lời email chuyên nghiệp. Luôn viết lịch sự, rõ ràng, đúng ngữ pháp tiếng Việt. Khi soạn email hãy đưa ra subject line và nội dung đầy đủ.' },
+    { id: 2, name: 'MC Bot', emoji: '🎤', color: '#ff6a9a', model: 'claude', prompt: 'Bạn là MC chuyên nghiệp, giỏi dẫn chương trình sự kiện. Hỗ trợ viết kịch bản, lời dẫn, câu chuyển tiếp mượt mà và lôi cuốn.' },
+    { id: 3, name: 'Coding Bot', emoji: '💻', color: '#6affd4', model: 'gpt4', prompt: 'Bạn là senior software developer. Giải thích code rõ ràng, viết code sạch có comment, đưa ra best practices. Luôn giải thích tại sao làm như vậy.' },
+    { id: 4, name: 'Tìm kiếm', emoji: '🔍', color: '#ffd76a', model: 'perplexity', prompt: 'Bạn là trợ lý tìm kiếm thông tin. Cung cấp thông tin chính xác, cập nhật và có nguồn dẫn chứng rõ ràng.' },
+  ];
+  saveBots();
+}
+
+// ─── INIT ───
+function init() {
+  renderBotList();
+  loadApiKeys();
+  buildEmojiGrid();
+  buildColorGrid();
+}
+
+function saveBots() { localStorage.setItem('aihub_bots', JSON.stringify(bots)); }
+function saveHistories() { localStorage.setItem('aihub_histories', JSON.stringify(chatHistories)); }
+
+function loadApiKeys() {
+  if (apiKeys.claude) document.getElementById('claudeKey').value = apiKeys.claude;
+  if (apiKeys.openai) document.getElementById('openaiKey').value = apiKeys.openai;
+  if (apiKeys.perplexity) document.getElementById('perplexityKey').value = apiKeys.perplexity;
+}
+
+function saveKeys() {
+  apiKeys = {
+    claude: document.getElementById('claudeKey').value.trim(),
+    openai: document.getElementById('openaiKey').value.trim(),
+    perplexity: document.getElementById('perplexityKey').value.trim(),
+  };
+  localStorage.setItem('aihub_keys', JSON.stringify(apiKeys));
+  showToast('✅ Đã lưu API keys!', 'success');
+}
+
+// ─── BOT LIST ───
+function renderBotList() {
+  const list = document.getElementById('botList');
+  list.innerHTML = bots.map(bot => `
+    <div class="bot-item ${currentBot?.id === bot.id ? 'active' : ''}" onclick="selectBot(${bot.id})">
+      <div class="bot-icon" style="background:${bot.color}22">${bot.emoji}</div>
+      <div class="bot-info">
+        <div class="bot-name">${bot.name}</div>
+        <div class="bot-model">${getModelLabel(bot.model)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function getModelLabel(model) {
+  const map = { claude: 'Claude Sonnet', 'claude-haiku': 'Claude Haiku', gpt4: 'GPT-4o', gpt4mini: 'GPT-4o mini', perplexity: 'Perplexity' };
+  return map[model] || model;
+}
+
+function selectBot(id) {
+  currentBot = bots.find(b => b.id === id);
+  if (!currentBot) return;
+
+  document.getElementById('headerIcon').textContent = currentBot.emoji;
+  document.getElementById('headerIcon').style.background = currentBot.color + '22';
+  document.getElementById('headerName').textContent = currentBot.name;
+  document.getElementById('headerModel').textContent = getModelLabel(currentBot.model);
+
+  renderBotList();
+  renderMessages();
+}
+
+// ─── MESSAGES ───
+function renderMessages() {
+  const container = document.getElementById('messages');
+  const history = chatHistories[currentBot.id] || [];
+
+  if (history.length === 0) {
+    container.innerHTML = `
+      <div class="welcome">
+        <div class="welcome-icon">${currentBot.emoji}</div>
+        <h2>${currentBot.name}</h2>
+        <p style="color:var(--text-dim);font-size:13px;font-family:'Space Mono',monospace;margin-top:4px">${getModelLabel(currentBot.model)}</p>
+        <p style="margin-top:12px">${currentBot.prompt.substring(0, 100)}...</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = history.map(msg => `
+    <div class="msg ${msg.role}">
+      <div class="msg-avatar" style="background:${msg.role === 'user' ? '#1e1a3a' : currentBot.color + '22'}">
+        ${msg.role === 'user' ? '👤' : currentBot.emoji}
+      </div>
+      <div class="msg-bubble">${formatMessage(msg.content)}</div>
+    </div>
+  `).join('');
+
+  container.scrollTop = container.scrollHeight;
+}
+
+function formatMessage(text) {
+  // Code blocks
+  text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+  // Inline code
+  text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // Bold
+  text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  // Line breaks
+  text = text.replace(/\n/g, '<br>');
+  return text;
+}
+
+function clearChat() {
+  if (!currentBot) return;
+  chatHistories[currentBot.id] = [];
+  saveHistories();
+  renderMessages();
+}
+
+// ─── SEND ───
+async function sendMessage() {
+  if (isLoading || !currentBot) return;
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+
+  if (!chatHistories[currentBot.id]) chatHistories[currentBot.id] = [];
+  chatHistories[currentBot.id].push({ role: 'user', content: text });
+  saveHistories();
+  renderMessages();
+
+  // Show typing
+  const container = document.getElementById('messages');
+  const typingEl = document.createElement('div');
+  typingEl.className = 'msg bot';
+  typingEl.id = 'typing';
+  typingEl.innerHTML = `
+    <div class="msg-avatar" style="background:${currentBot.color}22">${currentBot.emoji}</div>
+    <div class="typing-indicator">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div>`;
+  container.appendChild(typingEl);
+  container.scrollTop = container.scrollHeight;
+
+  isLoading = true;
+  document.getElementById('sendBtn').disabled = true;
+
+  try {
+    const response = await callAPI(currentBot, chatHistories[currentBot.id]);
+    document.getElementById('typing')?.remove();
+    chatHistories[currentBot.id].push({ role: 'bot', content: response });
+    saveHistories();
+    renderMessages();
+  } catch (err) {
+    document.getElementById('typing')?.remove();
+    chatHistories[currentBot.id].push({ role: 'bot', content: '⚠️ Lỗi: ' + err.message });
+    saveHistories();
+    renderMessages();
+  }
+
+  isLoading = false;
+  document.getElementById('sendBtn').disabled = false;
+}
+
+async function callAPI(bot, history) {
+  const messages = history.slice(0, -1).map(m => ({
+    role: m.role === 'bot' ? 'assistant' : 'user',
+    content: m.content
+  }));
+  const lastMsg = history[history.length - 1].content;
+
+  if (bot.model === 'claude' || bot.model === 'claude-haiku') {
+    if (!apiKeys.claude) throw new Error('Chưa nhập Claude API key! Vui lòng nhập ở sidebar.');
+    const modelName = bot.model === 'claude' ? 'claude-3-5-sonnet-20241022' : 'claude-3-haiku-20240307';
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKeys.claude,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-calls': 'true'
+      },
+      body: JSON.stringify({
+        model: modelName,
+        max_tokens: 2048,
+        system: bot.prompt,
+        messages: [...messages, { role: 'user', content: lastMsg }]
+      })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || 'Claude API error');
+    }
+    const data = await res.json();
+    return data.content[0].text;
+
+  } else if (bot.model === 'gpt4' || bot.model === 'gpt4mini') {
+    if (!apiKeys.openai) throw new Error('Chưa nhập OpenAI API key! Vui lòng nhập ở sidebar.');
+    const modelName = bot.model === 'gpt4' ? 'gpt-4o' : 'gpt-4o-mini';
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKeys.openai}` },
+      body: JSON.stringify({
+        model: modelName,
+        messages: [{ role: 'system', content: bot.prompt }, ...messages, { role: 'user', content: lastMsg }]
+      })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || 'OpenAI API error');
+    }
+    const data = await res.json();
+    return data.choices[0].message.content;
+
+  } else if (bot.model === 'perplexity') {
+    if (!apiKeys.perplexity) throw new Error('Chưa nhập Perplexity API key! Vui lòng nhập ở sidebar.');
+    const res = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKeys.perplexity}` },
+      body: JSON.stringify({
+        model: 'llama-3.1-sonar-large-128k-online',
+        messages: [{ role: 'system', content: bot.prompt }, ...messages, { role: 'user', content: lastMsg }]
+      })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || 'Perplexity API error');
+    }
+    const data = await res.json();
+    return data.choices[0].message.content;
+  }
+
+  throw new Error('Model không hợp lệ');
+}
+
+// ─── MODAL ───
+function buildEmojiGrid() {
+  document.getElementById('emojiGrid').innerHTML = EMOJIS.map(e => `
+    <button class="emoji-btn ${e === selectedEmoji ? 'selected' : ''}" onclick="selectEmoji('${e}')">${e}</button>
+  `).join('');
+}
+
+function buildColorGrid() {
+  document.getElementById('colorGrid').innerHTML = COLORS.map(c => `
+    <div class="color-btn ${c === selectedColor ? 'selected' : ''}"
+      style="background:${c}"
+      onclick="selectColor('${c}')"></div>
+  `).join('');
+}
+
+function selectEmoji(e) {
+  selectedEmoji = e;
+  buildEmojiGrid();
+}
+
+function selectColor(c) {
+  selectedColor = c;
+  buildColorGrid();
+}
+
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('show');
+  document.getElementById('botName').focus();
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+  document.getElementById('botName').value = '';
+  document.getElementById('botPrompt').value = '';
+}
+
+function createBot() {
+  const name = document.getElementById('botName').value.trim();
+  const model = document.getElementById('botModel').value;
+  const prompt = document.getElementById('botPrompt').value.trim();
+
+  if (!name) { showToast('⚠️ Nhập tên bot nhé!', 'error'); return; }
+  if (!prompt) { showToast('⚠️ Nhập system prompt nhé!', 'error'); return; }
+
+  const newBot = {
+    id: Date.now(),
+    name, emoji: selectedEmoji, color: selectedColor, model, prompt
+  };
+
+  bots.push(newBot);
+  saveBots();
+  renderBotList();
+  closeModal();
+  selectBot(newBot.id);
+  showToast(`✨ Đã tạo ${name}!`, 'success');
+}
+
+// ─── UTILS ───
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Close modal on overlay click
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+init();
+</script>
+</body>
+</html>
