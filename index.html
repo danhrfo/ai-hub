@@ -123,12 +123,12 @@
   <div class="bot-list" id="botList"></div>
   <button class="add-btn" onclick="openModal()">＋ Tạo bot mới</button>
   <div class="api-sec">
-    <div class="slabel" style="padding:0 10px 8px">API Keys</div>
-    <div class="arow"><label class="alabel">🟣 Claude</label><input class="ainput" type="password" id="kc" placeholder="sk-ant-api03-..."/></div>
-    <div class="arow"><label class="alabel">🟢 OpenAI</label><input class="ainput" type="password" id="ko" placeholder="sk-..."/></div>
-    <div class="arow"><label class="alabel">🔵 Gemini</label><input class="ainput" type="password" id="kg" placeholder="AIza..."/></div>
-    <div class="arow"><label class="alabel">🩷 Perplexity</label><input class="ainput" type="password" id="kp" placeholder="pplx-..."/></div>
-    <button class="save-btn" onclick="saveKeys()">💾 Lưu API Keys</button>
+    <div class="slabel" style="padding:0 10px 8px">API Key</div>
+    <div class="arow">
+      <label class="alabel">🌌 OpenRouter</label>
+      <input class="ainput" type="password" id="kor" placeholder="sk-or-v1-..."/>
+    </div>
+    <button class="save-btn" onclick="saveKeys()">💾 Lưu API Key</button>
   </div>
 </div>
 <div id="main">
@@ -167,7 +167,7 @@
       <label class="fl">Model AI</label>
       <select class="fs" id="bModel">
         <optgroup label="🟣 Claude">
-          <option value="claude-sonnet">claude-3-5-sonnet — Thông minh, cân bằng</option>
+          <option value="claude-sonnet">claude-3.5-sonnet — Thông minh, cân bằng</option>
           <option value="claude-haiku">claude-3-haiku — Nhanh & nhẹ</option>
           <option value="claude-opus">claude-3-opus — Mạnh nhất</option>
         </optgroup>
@@ -197,21 +197,20 @@
 </div>
 <div class="toast" id="toast"></div>
 <script>
-const PROXY = 'https://hub.danhrfo.workers.dev';
-
+// Cập nhật Models Mapping theo chuẩn ID của OpenRouter
 const MODELS={
-  'claude-sonnet':{l:'Claude 3.5 Sonnet',p:'claude',m:'claude-3-5-sonnet-20241022'},
-  'claude-haiku':{l:'Claude 3 Haiku',p:'claude',m:'claude-3-haiku-20240307'},
-  'claude-opus':{l:'Claude 3 Opus',p:'claude',m:'claude-3-opus-20240229'},
-  'gpt-4o':{l:'GPT-4o',p:'openai',m:'gpt-4o'},
-  'gpt-4o-mini':{l:'GPT-4o mini',p:'openai',m:'gpt-4o-mini'},
-  'gpt-4-turbo':{l:'GPT-4 Turbo',p:'openai',m:'gpt-4-turbo'},
-  'o1-mini':{l:'o1-mini',p:'openai',m:'o1-mini'},
-  'gemini-2.0-flash':{l:'Gemini 2.0 Flash',p:'gemini',m:'gemini-2.0-flash'},
-  'gemini-1.5-pro':{l:'Gemini 1.5 Pro',p:'gemini',m:'gemini-1.5-pro'},
-  'gemini-1.5-flash':{l:'Gemini 1.5 Flash',p:'gemini',m:'gemini-1.5-flash'},
-  'sonar-large':{l:'Perplexity Sonar L',p:'perplexity',m:'llama-3.1-sonar-large-128k-online'},
-  'sonar-small':{l:'Perplexity Sonar S',p:'perplexity',m:'llama-3.1-sonar-small-128k-online'},
+  'claude-sonnet':{l:'Claude 3.5 Sonnet',m:'anthropic/claude-3.5-sonnet'},
+  'claude-haiku':{l:'Claude 3 Haiku',m:'anthropic/claude-3-haiku'},
+  'claude-opus':{l:'Claude 3 Opus',m:'anthropic/claude-3-opus'},
+  'gpt-4o':{l:'GPT-4o',m:'openai/gpt-4o'},
+  'gpt-4o-mini':{l:'GPT-4o mini',m:'openai/gpt-4o-mini'},
+  'gpt-4-turbo':{l:'GPT-4 Turbo',m:'openai/gpt-4-turbo'},
+  'o1-mini':{l:'o1-mini',m:'openai/o1-mini'},
+  'gemini-2.0-flash':{l:'Gemini 2.0 Flash',m:'google/gemini-2.0-flash-001'},
+  'gemini-1.5-pro':{l:'Gemini 1.5 Pro',m:'google/gemini-1.5-pro'},
+  'gemini-1.5-flash':{l:'Gemini 1.5 Flash',m:'google/gemini-1.5-flash'},
+  'sonar-large':{l:'Perplexity Sonar L',m:'perplexity/llama-3.1-sonar-large-128k-online'},
+  'sonar-small':{l:'Perplexity Sonar S',m:'perplexity/llama-3.1-sonar-small-128k-online'},
 };
 const EMOJIS=['📧','🎤','💻','📊','🎨','📝','🔍','💡','🚀','⚡','🎯','🧠','🌐','📱','🎬','📚','💼','🛠️','✨','🤖','🏨','🍽️','✈️','💰','📣','🎪','🎭','🏆'];
 const COLORS=['#7c6aff','#ff6a9a','#6affd4','#ffd76a','#ff8c6a','#6ab4ff','#c26aff','#6aff8c','#ff6a6a','#6affff','#ffb86a','#a8ff6a'];
@@ -234,17 +233,14 @@ if(!bots.length){
 
 function init(){
   renderList();
-  if(keys.claude)document.getElementById('kc').value=keys.claude;
-  if(keys.openai)document.getElementById('ko').value=keys.openai;
-  if(keys.gemini)document.getElementById('kg').value=keys.gemini;
-  if(keys.perplexity)document.getElementById('kp').value=keys.perplexity;
+  if(keys.openrouter) document.getElementById('kor').value = keys.openrouter;
   buildEG();buildCG();
 }
 
 function saveKeys(){
-  keys={claude:document.getElementById('kc').value.trim(),openai:document.getElementById('ko').value.trim(),gemini:document.getElementById('kg').value.trim(),perplexity:document.getElementById('kp').value.trim()};
+  keys={openrouter:document.getElementById('kor').value.trim()};
   localStorage.setItem('ahk',JSON.stringify(keys));
-  toast('✅ Đã lưu API keys!','ok');
+  toast('✅ Đã lưu API key OpenRouter!','ok');
 }
 
 function renderList(){
@@ -344,32 +340,37 @@ async function send(){
   document.getElementById('ui').focus();
 }
 
+// Hàm này được cấu hình lại để gọi thẳng đến API OpenRouter
 async function callWorker(mk, sys, h){
   const m = MODELS[mk];
   if(!m) throw new Error('Model không hợp lệ');
-  const msgs = h.slice(0,-1).map(x=>({role:x.r==='bot'?'assistant':'user', content:x.c}));
-  const last = h[h.length-1].c;
-  msgs.push({role:'user', content:last});
 
-  const keyMap = {claude:keys.claude, openai:keys.openai, gemini:keys.gemini, perplexity:keys.perplexity};
-  const apiKey = keyMap[m.p];
-  if(!apiKey) throw new Error(`Chưa nhập ${m.p} API key!`);
+  const apiKey = keys.openrouter;
+  if(!apiKey) throw new Error('Chưa nhập OpenRouter API key!');
 
-  const res = await fetch(PROXY, {
+  // Định dạng lại messages theo chuẩn OpenAI (OpenRouter hỗ trợ)
+  const msgs = [{role: 'system', content: sys}];
+  h.forEach(x => {
+    msgs.push({role: x.r==='bot' ? 'assistant' : 'user', content: x.c});
+  });
+
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: 'POST',
-    headers: {'Content-Type':'application/json'},
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': window.location.href, // Recommended by OpenRouter
+      'X-Title': 'AI Hub Workspace' // Recommended by OpenRouter
+    },
     body: JSON.stringify({
-      provider: m.p,
-      model: m.m,
-      system: sys,
-      messages: msgs.slice(0,-1),
-      apiKey
+      model: m.m, // Model theo định dạng của OpenRouter (vd: google/gemini-1.5-pro)
+      messages: msgs
     })
   });
 
   const data = await res.json();
-  if(data.error) throw new Error(data.error);
-  return data.text;
+  if(data.error) throw new Error(data.error.message || 'Lỗi phản hồi từ OpenRouter');
+  return data.choices[0].message.content;
 }
 
 function buildEG(){document.getElementById('eg').innerHTML=EMOJIS.map(e=>`<button class="ebtn ${e===se?'sel':''}" onclick="selE('${e}')">${e}</button>`).join('');}
